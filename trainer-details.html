@@ -24,6 +24,14 @@
 
         .navbar {
             background-color: #121212;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            /* Set a higher z-index to ensure the navbar appears above other elements */
+        }
+
+        .main {
+            padding: 60px 20px 20px;
         }
 
         .navbar-brand,
@@ -194,7 +202,7 @@
         </div>
     </nav>
 
-    <main>
+    <main class="main">
         <div class="con">
             <div class="box">
                 <h1>Trainers Details</h1>
