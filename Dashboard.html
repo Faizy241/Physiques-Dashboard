@@ -20,6 +20,18 @@
       font-family: 'Montserrat'
     }
 
+    .navbar {
+      background-color: #121212;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      /* Set a higher z-index to ensure the navbar appears above other elements */
+    }
+
+    .main {
+      padding: 60px 20px 20px;
+    }
+
     .navbar-brand,
     .navbar-nav a {
       color: #D5FA05 !important;
@@ -97,7 +109,7 @@
     </div>
   </nav>
 
-  <main>
+  <main class="main">
     <div class="con">
       <div class="box" id="contentContainer">
         <h1>Dashboard</h1>
