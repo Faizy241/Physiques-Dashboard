@@ -28,7 +28,6 @@
             position: fixed;
             width: 100%;
             z-index: 1000;
-            /* Set a higher z-index to ensure the navbar appears above other elements */
         }
 
         .main {
@@ -108,7 +107,6 @@
             color: #D5FA05;
         }
 
-
         .btn-primary {
             background-color: #D5FA05;
             color: #121212;
@@ -154,27 +152,56 @@
 
         .form-check-input {
             background-color: #2F2F2F !important;
-            /* Background color of the entire checkbox when unchecked */
             border-color: black !important;
-            /* Border color of the entire checkbox when unchecked */
         }
 
         .form-check-input+.form-check-label::before {
             border-color: #2F2F2F !important;
-            /* Color of the circle inside the checkbox when unchecked */
         }
 
-        /* Style for checked checkbox */
         .form-check-input:checked {
             background-color: #D5FA05 !important;
-            /* Background color of the entire checkbox when checked */
             border-color: #D5FA05 !important;
-            /* Border color of the entire checkbox when checked */
         }
 
         .form-check-input:checked+.form-check-label::before {
             border-color: #2F2F2F !important;
-            /* Color of the circle inside the checkbox when checked */
+        }
+
+        #userSearchInput {
+            color: rgb(236, 233, 233) !important;
+        }
+
+        #userSearchInput::placeholder {
+            color: gray;
+        }
+
+        .search-form {
+            max-width: 100%;
+            margin: auto;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+        }
+
+        .btn-search {
+            color: #D5FA05;
+            border: 1px solid #D5FA05 !important;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: #D5FA05 !important;
+        }
+
+        .btn-search:hover {
+            background-color:#D5FA05 !important;
+            color: #121212;
+        }
+
+        .btn-search:focus,
+        .btn-search:active {
+            box-shadow: #D5FA05 !important;
         }
     </style>
 </head>
@@ -206,6 +233,11 @@
         <div class="con">
             <div class="box">
                 <h1>User Details</h1>
+                <form class="search-form d-flex mb-3">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                        id="userSearchInput">
+                    <button class="btn btn-search" type="button">Search</button>
+                </form>
                 <ul id="userList" class="list-group"></ul>
             </div>
         </div>
@@ -272,77 +304,95 @@
         var firestore = firebase.firestore();
         var auth = firebase.auth();
 
-        // Fetch user details and display on the page
         var userListElement = document.getElementById('userList');
 
         if (userListElement) {
+            // Fetch user details
             firestore.collection('users').get().then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    var userData = doc.data();
-                    var userName = userData.Name;
-                    //var userRole = userData.role;
-                    var userUniqueID = userData.uniqueID;
-                    var userProfilePicture = userData.profilePicture;
-                    var userPhoneNo = userData.phoneNumber;
-                    var userActivity = userData.Activity;
-                    var userHistory = userData.History;
+                var usersArray = querySnapshot.docs.map(doc => doc.data());
 
+                // Add input event listener to the search input for real-time filtering
+                var searchInput = document.getElementById('userSearchInput');
+                searchInput.addEventListener('input', function () {
+                    var searchTerm = searchInput.value.toLowerCase();
 
-                    var listItem = document.createElement('li');
-                    listItem.classList.add('d-flex', 'align-items-center'); // Add flex and alignment classes
+                    // Filter users based on the search term
+                    var filteredUsers = usersArray.filter(user =>
+                        user.Name.toLowerCase().includes(searchTerm) || user.uniqueID.includes(searchTerm)
+                    );
 
-                    var imgElement = document.createElement('img');
-                    imgElement.alt = 'Profile Picture';
-                    imgElement.style.width = '60px'; // Increase the size of the profile picture
-                    imgElement.style.height = '60px';
-                    imgElement.style.borderRadius = '50%';
-                    imgElement.style.marginRight = '10px'; // Add margin to the right of the picture
-                    imgElement.style.marginLeft = '20px';
-
-                    if (userProfilePicture) {
-                        imgElement.src = userProfilePicture;
-                    } else {
-                        // Set a default image if no profile picture is available
-                        imgElement.src = 'Logo.png';
-                    }
-
-                    listItem.appendChild(imgElement);
-
-                    var userDetailsContainer = document.createElement('div');
-                    userDetailsContainer.style.color = 'rgba(255, 255, 255, 0.8)';
-                    userDetailsContainer.style.marginLeft = '10px'; // Adjust margin as needed
-
-                    userDetailsContainer.innerHTML = `<div style="font-size: 18px;">Name: ${userName}</div><div style="font-size: 16px;">UniqueID: ${userUniqueID}</div>`;
-                    listItem.appendChild(userDetailsContainer);
-
-                    var activityCircle = document.createElement('div');
-                    activityCircle.style.width = '20px';
-                    activityCircle.style.height = '20px';
-                    activityCircle.style.borderRadius = '50%';
-                    activityCircle.style.marginLeft = 'auto';
-                    activityCircle.style.marginRight = '20px';
-                    activityCircle.style.backgroundColor = userActivity ? '#D5FA05' : '#2F2F2F';
-
-                    listItem.appendChild(activityCircle);
-
-                    listItem.style.cursor = 'pointer';
-                    listItem.setAttribute('data-bs-toggle', 'modal');
-                    listItem.setAttribute('data-bs-target', '#userDetailsModal');
-                    listItem.addEventListener('click', function () {
-                        showUserDetailsModal(userName, userPhoneNo, userUniqueID, userActivity, userHistory);
-                    });
-
-                    userListElement.appendChild(listItem);
-
-                    // Add a horizontal line after each listItem
-                    var horizontalLine = document.createElement('hr');
-                    userListElement.appendChild(horizontalLine);
+                    // Clear existing content and display the filtered users
+                    userListElement.innerHTML = '';
+                    displayUsers(filteredUsers);
                 });
+
+                // Display all users initially
+                displayUsers(usersArray);
             }).catch((error) => {
                 console.error('Error fetching user details: ', error);
             });
         } else {
             console.error('User list element not found in the document.');
+        }
+
+
+        function displayUsers(usersArray) {
+            usersArray.forEach((userData) => {
+                var userName = userData.Name;
+                var userUniqueID = userData.uniqueID;
+                var userProfilePicture = userData.profilePicture;
+                var userPhoneNo = userData.phoneNumber;
+                var userActivity = userData.Activity;
+                var userHistory = userData.History;
+
+                var listItem = document.createElement('li');
+                listItem.classList.add('d-flex', 'align-items-center'); 
+
+                var imgElement = document.createElement('img');
+                imgElement.alt = 'Profile Picture';
+                imgElement.style.width = '60px'; 
+                imgElement.style.height = '60px';
+                imgElement.style.borderRadius = '50%';
+                imgElement.style.marginRight = '10px';
+                imgElement.style.marginLeft = '20px';
+
+                if (userProfilePicture) {
+                    imgElement.src = userProfilePicture;
+                } else {
+                    imgElement.src = 'Logo.png';
+                }
+
+                listItem.appendChild(imgElement);
+
+                var userDetailsContainer = document.createElement('div');
+                userDetailsContainer.style.color = 'rgba(255, 255, 255, 0.8)';
+                userDetailsContainer.style.marginLeft = '10px';
+
+                userDetailsContainer.innerHTML = `<div style="font-size: 18px;">Name: ${userName}</div><div style="font-size: 16px;">UniqueID: ${userUniqueID}</div>`;
+                listItem.appendChild(userDetailsContainer);
+
+                var activityCircle = document.createElement('div');
+                activityCircle.style.width = '20px';
+                activityCircle.style.height = '20px';
+                activityCircle.style.borderRadius = '50%';
+                activityCircle.style.marginLeft = 'auto';
+                activityCircle.style.marginRight = '20px';
+                activityCircle.style.backgroundColor = userActivity ? '#D5FA05' : '#2F2F2F';
+
+                listItem.appendChild(activityCircle);
+
+                listItem.style.cursor = 'pointer';
+                listItem.setAttribute('data-bs-toggle', 'modal');
+                listItem.setAttribute('data-bs-target', '#userDetailsModal');
+                listItem.addEventListener('click', function () {
+                    showUserDetailsModal(userName, userPhoneNo, userUniqueID, userActivity, userHistory);
+                });
+
+                userListElement.appendChild(listItem);
+
+                var horizontalLine = document.createElement('hr');
+                userListElement.appendChild(horizontalLine);
+            });
         }
 
         function showUserDetailsModal(name, phoneNumber, uniqueId, activity, history) {
@@ -371,7 +421,6 @@
                             phoneNumber: updatedPhoneNumber,
                             Activity: updatedActivity,
                             History: updatedHistory
-                            // Update other fields here
                         }).then(() => {
                             alert('User details updated successfully');
                             // Close the modal after updating
@@ -390,7 +439,6 @@
             return firestore.collection('users').where('uniqueID', '==', uniqueId).get()
                 .then((querySnapshot) => {
                     if (querySnapshot.size > 0) {
-                        // Assuming there's only one user with the given uniqueID
                         return querySnapshot.docs[0].id;
                     } else {
                         console.error('User not found with the provided uniqueID.');
@@ -407,7 +455,8 @@
         function signOut() {
             auth.signOut().then(function () {
                 // Sign-out successful.
-                console.log("User signed out");
+                console.log("Admin signed out");
+                alert("Admin signed out Successfully");
                 // Redirect to the sign-in or home page if needed
                 window.location.href = "index.html";
             }).catch(function (error) {
@@ -429,8 +478,6 @@
 
         // Call the checkAuthState function when the page loads
         checkAuthState();
-
-
 
     </script>
 </body>
