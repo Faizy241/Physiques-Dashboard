@@ -39,14 +39,11 @@
 
     .navbar-nav .active {
       font-weight: bold;
-      /* or add any other styling for the active link */
       color: #D5FA05 !important;
-      /* Active link color */
     }
 
     .navbar-nav .nav-link:not(.active) {
       color: #808080 !important;
-      /* Inactive link color */
     }
 
     .box {
@@ -82,9 +79,7 @@
       border: 1px solid #383838B2;
       border-radius: 5px;
       outline: none;
-      /* Remove default focus outline */
       box-shadow: 0 0 5px rgba(213, 250, 5, 0.7);
-      /* Add your own box shadow if desired */
     }
 
 
@@ -188,7 +183,7 @@
           querySnapshot.forEach((doc) => {
             var trainerData = doc.data();
             var option = document.createElement("option");
-            option.value = trainerData.uniqueID; // UniqueID of the trainer
+            option.value = trainerData.uniqueID;
             option.text = trainerData.Name;
             trainerDropdown.add(option);
           });
@@ -241,13 +236,12 @@
             Sat: null,
             profilePicture: null,
             trainer: selectedTrainerId,
-            role: "user",
             Activity: true,
             History: history,
           })
             .then(() => {
               alert('User registered successfully!');
-              // Redirect to dashboard or other page
+              // Redirect to user-registration page
               window.location.href = 'user-registration.html';
             })
             .catch((error) => {
@@ -264,7 +258,8 @@
     function signOut() {
       auth.signOut().then(function () {
         // Sign-out successful.
-        console.log("User signed out");
+        console.log("Admin signed out");
+        alert("Admin signed out Successfully" );
         // Redirect to the sign-in or home page if needed
         window.location.href = "index.html";
       }).catch(function (error) {
