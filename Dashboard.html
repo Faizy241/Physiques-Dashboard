@@ -260,6 +260,9 @@
     var loadingElement = document.getElementById('loading');
     var contentContainer = document.getElementById('contentContainer');
 
+    // Initially, hide the content container
+    contentContainer.style.display = 'none';
+
     loadingElement.style.display = 'block'; // Show loading element
 
     firestore.collection("importantDocs").doc(docId)
