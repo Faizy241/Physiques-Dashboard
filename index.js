@@ -8,16 +8,11 @@ var firebaseConfig = {
     appId: "1:174104508999:web:8f994f2c1d52aeb53b0f62",
     measurementId: "G-VRMNPEM3XH"
 };
-
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
-// Initialize auth
 const auth = firebase.auth();
 
 // Set up our login function
 function login() {
-    // Get all our input fields
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -30,10 +25,7 @@ function login() {
 
     auth.signInWithEmailAndPassword(email, password)
         .then(function () {
-            // Initialize firestore within the authentication block
             firestore = firebase.firestore();
-
-            // Declare user variable
             const user = auth.currentUser;
 
             // Check user role in Firestore
