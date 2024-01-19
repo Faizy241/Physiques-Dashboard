@@ -23,7 +23,7 @@ function login() {
         // Don't continue running the code
     }
 
-    auth.signInWithEmailAndPassword(email, password)
+    /*auth.signInWithEmailAndPassword(email, password)
         .then(function () {
             firestore = firebase.firestore();
             const user = auth.currentUser;
@@ -61,7 +61,7 @@ function login() {
             const error_message = error.message;
 
             alert(error_message);
-        });
+        });*/
 }
 
 // Validate Functions
