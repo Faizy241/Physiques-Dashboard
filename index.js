@@ -36,7 +36,6 @@ function login() {
                         if (role === 'admin') {
                             // Allow access for admin
                             alert('Admin logged in');
-                            window.location.replace('Dashboard.html');
                         } else {
                             // Deny access for non-admin
                             alert('User is not an admin');
